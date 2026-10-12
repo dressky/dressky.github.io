@@ -1,30 +1,741 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>dressky</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979..2050&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="dressky — personal space. Find me online.">
+  <title>dressky — personal space</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0b0c;
+      --fg: #f4f4f5;
+      --muted: #85858f;
+      --line: #252529;
+      --card: rgba(20, 20, 23, .78);
+      --accent: #c4b5fd;
+      --glow: rgba(167, 139, 250, .13);
+      --radius: 22px;
+      --ease: cubic-bezier(.2, .7, .2, 1);
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f7f7f5;
+      --fg: #171719;
+      --muted: #777780;
+      --line: #dededb;
+      --card: rgba(255, 255, 255, .82);
+      --accent: #7654d8;
+      --glow: rgba(118, 84, 216, .10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100svh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: Inter, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      transition: background .25s, color .25s;
+    }
+
+    a {
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    ::selection {
+      color: var(--bg);
+      background: var(--accent);
+    }
+
+    .background {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .ambient {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          ellipse at 50% 42%,
+          var(--glow),
+          transparent 58%
+        );
+    }
+
+    .topbar,
+    main,
+    footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 58px;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      font: 600 13px/1 monospace;
+      letter-spacing: -.04em;
+      text-decoration: none;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font: 11px/1.4 monospace;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #a78bfa;
+      box-shadow: 0 0 12px #a78bfa70;
+    }
+
+    .theme-toggle {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--fg);
+      cursor: pointer;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      transform: rotate(-8deg);
+    }
+
+    .theme-toggle svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 72px 24px 84px;
+      text-align: center;
+    }
+
+    .hero {
+      width: 100%;
+      max-width: 760px;
+      animation: appear .8s var(--ease) both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 27px;
+      color: var(--muted);
+      font: 11px/1.5 monospace;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      width: 18px;
+      height: 1px;
+      background: var(--line);
+      content: "";
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(64px, 15vw, 132px);
+      font-weight: 750;
+      line-height: .9;
+      letter-spacing: -.085em;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      max-width: 320px;
+      margin: 25px auto 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .socials {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+      margin: 42px auto 0;
+      animation: appear .8s .12s var(--ease) both;
+    }
+
+    .social-card {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      aspect-ratio: 1 / 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--fg);
+      text-decoration: none;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition:
+        transform .25s var(--ease),
+        border-color .25s,
+        box-shadow .25s,
+        background .25s;
+    }
+
+    .social-card::before {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        145deg,
+        var(--glow),
+        transparent 65%
+      );
+      opacity: 0;
+      content: "";
+      transition: opacity .25s;
+    }
+
+    .social-card svg,
+    .social-card span {
+      position: relative;
+    }
+
+    .social-card svg {
+      width: 25px;
+      height: 25px;
+      color: var(--accent);
+      transition: transform .25s var(--ease);
+    }
+
+    .social-card span {
+      color: var(--muted);
+      font: 10px/1 monospace;
+      letter-spacing: .03em;
+    }
+
+    .social-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 35px -20px var(--accent);
+    }
+
+    .social-card:hover::before {
+      opacity: 1;
+    }
+
+    .social-card:hover svg {
+      transform: scale(1.12);
+    }
+
+    .social-card:active {
+      transform: scale(.97);
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .contact {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 43px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .contact a {
+      color: var(--fg);
+      text-decoration-color: var(--accent);
+      text-underline-offset: 4px;
+      transition: color .2s;
+    }
+
+    .contact a:hover {
+      color: var(--accent);
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 10px/1.5 monospace;
+      letter-spacing: .05em;
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .topbar {
+        min-height: 54px;
+        padding: 10px 18px;
+      }
+
+      main {
+        padding: 60px 20px 64px;
+      }
+
+      .eyebrow {
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        font-size: clamp(62px, 17vw, 86px);
+      }
+
+      .subtitle {
+        margin-top: 20px;
+        font-size: 13px;
+      }
+
+      .socials {
+        max-width: 340px;
+        gap: 9px;
+        margin-top: 35px;
+      }
+
+      .social-card {
+        gap: 10px;
+        border-radius: 19px;
+      }
+
+      .social-card svg {
+        width: 23px;
+        height: 23px;
+      }
+
+      .social-card span {
+        font-size: 9px;
+      }
+
+      .contact {
+        margin-top: 32px;
+        font-size: 12px;
+      }
+
+      footer {
+        padding: 17px 18px;
+        font-size: 9px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<canvas id="bg"></canvas>
-<main>
-  <div>
-    <h1>dressky</h1>
-  </div>
-  <nav class="links">
-    <a href="https://t.me/dressky" target="_blank" rel="noopener"><i data-lucide="send"></i><small>Telegram</small></a>
-    <a href="https://gitlab.com/dressky" target="_blank" rel="noopener"><i data-lucide="gitlab"></i><small>GitLab</small></a>
-    <a href="https://twitch.tv/dressky" target="_blank" rel="noopener"><i data-lucide="twitch"></i><small>Twitch</small></a>
-    <a href="https://steamcommunity.com/id/dressky" target="_blank" rel="noopener"><i data-lucide="gamepad-2"></i><small>Steam</small></a>
-  </nav>
-</main>
-<footer>contact me <a href="mailto:dressky@proton.me">dressky@proton.me</a>
-<div class="nh">read this:<a href="https://nohello.net" target="_blank" rel="noopener">nohello.net</a></div></footer>
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script src="js/background.js"></script>
+  <canvas class="background" id="background" aria-hidden="true"></canvas>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="dressky, главная">
+      dsk<span style="color:var(--accent)">.</span>
+    </a>
+
+    <div class="status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>personal space</span>
+    </div>
+
+    <button
+      class="theme-toggle"
+      id="themeToggle"
+      type="button"
+      aria-label="Переключить тему"
+      title="Переключить тему"
+    >
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.7"
+        stroke-linecap="round" stroke-linejoin="round"
+        aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>
+      </svg>
+    </button>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="eyebrow">welcome to my corner</div>
+
+      <h1 id="title">dressky<span>.</span></h1>
+
+      <p class="subtitle">
+        Developer, gamer, internet person.
+        <br>
+        Find me somewhere on the internet.
+      </p>
+
+      <nav class="socials" aria-label="Мои социальные сети">
+        <a class="social-card"
+          href="https://t.me/dressky"
+          target="_blank" rel="noopener noreferrer"
+          aria-label="Telegram, откроется в новой вкладке">
+          <svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <path d="m22 2-7 20-4-9-9-4Z"/>
+            <path d="M22 2 11 13"/>
+          </svg>
+          <span>Telegram</span>
+        </a>
+
+        <a class="social-card"
+          href="https://gitlab.com/dressky"
+          target="_blank" rel="noopener noreferrer"
+          aria-label="GitLab, откроется в новой вкладке">
+          <svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <path d="m12 22 9-13-3-7-3 7H9L6 2 3 9l9 13Z"/>
+            <path d="M3 9h18M9 9l3 13 3-13"/>
+          </svg>
+          <span>GitLab</span>
+        </a>
+
+        <a class="social-card"
+          href="https://twitch.tv/dressky"
+          target="_blank" rel="noopener noreferrer"
+          aria-label="Twitch, откроется в новой вкладке">
+          <svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <path d="M4 3H22V15L17 20H13L10 23H7V20H3V6Z"/>
+            <path d="M10 8v5m6-5v5"/>
+          </svg>
+          <span>Twitch</span>
+        </a>
+
+        <a class="social-card"
+          href="https://steamcommunity.com/id/dressky"
+          target="_blank" rel="noopener noreferrer"
+          aria-label="Steam, откроется в новой вкладке">
+          <svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="16" cy="8" r="5"/>
+            <circle cx="16" cy="8" r="2"/>
+            <circle cx="6" cy="17" r="3"/>
+            <path d="m8.7 15.7 3.8-3.8M3.2 15.8l5.1 2.5"/>
+          </svg>
+          <span>Steam</span>
+        </a>
+      </nav>
+
+      <div class="contact">
+        <span>say hello —</span>
+        <a href="mailto:dressky@proton.me">dressky@proton.me</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© <span id="year"></span> dressky</span>
+    <span class="footer-right">made with care <span style="color:var(--accent)">✳</span></span>
+  </footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const root = document.documentElement;
+      const canvas = document.getElementById("background");
+      const ctx = canvas.getContext("2d", { alpha: true });
+      const themeToggle = document.getElementById("themeToggle");
+      const themeIcon = document.getElementById("themeIcon");
+      const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
+
+      document.getElementById("year").textContent =
+        new Date().getFullYear();
+
+      const sunIcon = `
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42
+        m11.3 11.3 1.42 1.42M2 12h2m16 0h2
+        M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>`;
+
+      const moonIcon = `
+        <path d="M20.9 13A9 9 0 0 1 11 3.1
+        9 9 0 1 0 20.9 13Z"/>`;
+
+      function setTheme(theme) {
+        root.dataset.theme = theme;
+
+        const light = theme === "light";
+        themeIcon.innerHTML = light ? moonIcon : sunIcon;
+        themeToggle.setAttribute(
+          "aria-label",
+          light ? "Включить тёмную тему" : "Включить светлую тему"
+        );
+
+        const meta = document.querySelector('meta[name="theme-color"]');
+        meta.content = light ? "#f7f7f5" : "#0b0b0c";
+      }
+
+      themeToggle.addEventListener("click", () => {
+        setTheme(root.dataset.theme === "dark" ? "light" : "dark");
+      });
+
+      const CELL = 16;
+      const RADIUS = 155;
+      const pointer = { x: -1000, y: -1000 };
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+      let cols = 0;
+      let rows = 0;
+      let cells = [];
+      let frame = 0;
+      let lastDraw = 0;
+
+      function color() {
+        return root.dataset.theme === "light"
+          ? "20,20,24"
+          : "230,225,255";
+      }
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        cols = Math.ceil(width / CELL);
+        rows = Math.ceil(height / CELL);
+
+        cells = Array.from({ length: cols * rows }, () => ({
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.4 + Math.random() * 0.7,
+          opacity: 0.025 + Math.random() * 0.055
+        }));
+
+        render(performance.now(), true);
+      }
+
+      function render(now, staticFrame = false) {
+        ctx.clearRect(0, 0, width, height);
+
+        const rgb = color();
+        const t = now / 1000;
+        const cellSize = CELL - 2;
+        const interactive = finePointer.matches;
+        const px = pointer.x;
+        const py = pointer.y;
+
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const cell = cells[row * cols + col];
+            const cx = col * CELL + CELL / 2;
+            const cy = row * CELL + CELL / 2;
+
+            let alpha = cell.opacity;
+
+            if (!staticFrame && !reducedMotion.matches) {
+              alpha += 0.035 * (
+                0.5 + 0.5 * Math.sin(t * cell.speed + cell.phase)
+              );
+            }
+
+            if (interactive) {
+              const dx = cx - px;
+              const dy = cy - py;
+              const distance = Math.hypot(dx, dy);
+
+              if (distance < RADIUS) {
+                const influence = 1 - distance / RADIUS;
+                alpha += 0.55 * influence * influence;
+              }
+            }
+
+            ctx.fillStyle = `rgba(${rgb},${Math.min(alpha, 0.8)})`;
+            ctx.fillRect(
+              col * CELL,
+              row * CELL,
+              cellSize,
+              cellSize
+            );
+          }
+        }
+      }
+
+      function animate(now) {
+        if (document.hidden) {
+          frame = 0;
+          return;
+        }
+
+        if (now - lastDraw > 32) {
+          render(now);
+          lastDraw = now;
+        }
+
+        frame = requestAnimationFrame(animate);
+      }
+
+      function start() {
+        if (!reducedMotion.matches && !frame && !document.hidden) {
+          frame = requestAnimationFrame(animate);
+        }
+      }
+
+      function stop() {
+        if (frame) {
+          cancelAnimationFrame(frame);
+          frame = 0;
+        }
+        render(performance.now(), true);
+      }
+
+      window.addEventListener("resize", resize, { passive: true });
+
+      window.addEventListener("pointermove", event => {
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+
+        if (reducedMotion.matches) {
+          render(performance.now(), true);
+        }
+      }, { passive: true });
+
+      window.addEventListener("pointerleave", () => {
+        pointer.x = -1000;
+        pointer.y = -1000;
+      }, { passive: true });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          if (frame) cancelAnimationFrame(frame);
+          frame = 0;
+        } else {
+          start();
+          render(performance.now(), true);
+        }
+      });
+
+      reducedMotion.addEventListener("change", () => {
+        if (reducedMotion.matches) stop();
+        else start();
+      });
+
+      root.addEventListener("change", () => {
+        render(performance.now(), true);
+      });
+
+      // Update the background when the theme changes.
+      new MutationObserver(() => {
+        render(performance.now(), true);
+      }).observe(root, {
+        attributes: true,
+        attributeFilter: ["data-theme"]
+      });
+
+      resize();
+      start();
+    })();
+  </script>
 </body>
 </html>
